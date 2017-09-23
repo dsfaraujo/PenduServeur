@@ -1,5 +1,8 @@
 package serveur;
-
+/*
+ * *********************
+ * Activité principal
+ */
 public class Main 
 {
 	static String motPendu;

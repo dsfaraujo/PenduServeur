@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Observable;
 
 /**
+ * ********************************************************
  * Classe Conversation
  * 
  * Encapsule la liste des messages envoyes par des clients.
@@ -19,13 +20,11 @@ import java.util.Observable;
 public class Conversation extends Observable
 {
 
-
-	
-	
 	List<Message> messages = new ArrayList<Message>();
 	List<String> clients = new ArrayList<String>();
 	
 	/**
+	 * **************************************************
 	 * Ajoute a la liste de messages le message et alerte
 	 * les observateurs.
 	 * 
@@ -43,6 +42,7 @@ public class Conversation extends Observable
 	}
 	
 	/**
+	 * *********************************
 	 * Accesseur sur le dernier message
 	 * 
 	 * @return le dernier message
@@ -53,6 +53,7 @@ public class Conversation extends Observable
 	}
 	
 	/**
+	 * ********************************************************
 	 * Accesseur pour la liste des noms des clients en ligne
 	 * @return la liste des clients actifs
 	 */
@@ -62,6 +63,7 @@ public class Conversation extends Observable
 	}
 	
 	/**
+	 * ********************************************************
 	 * Ajoute un nom de client à la liste si celle-ci ne le contient pas déjà
 	 * @param client
 	 * @return Vrai si le client a été ajouté, false sinon.
@@ -69,22 +71,18 @@ public class Conversation extends Observable
 	synchronized boolean ajouterClient(String client)
 	{
 		if (clients.contains(client)) {
-			
 			return false;
 		}
 		else {
 			
 		}
 		clients.add(client);
-		
-		
-
         parler(new Message(client, "vient de se connecter"));
-        
 		return true;
 	}
 	
 	/**
+	 * ********************************************************
 	 * Retire un nom de la liste des clients. Cette méthode est appelée lorsqu'un
 	 * client se déconnecte.
 	 * @param client

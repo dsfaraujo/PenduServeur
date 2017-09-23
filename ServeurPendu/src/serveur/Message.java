@@ -1,6 +1,7 @@
 package serveur;
 
 /**
+ * ********************************************************
  * Classe Message
  * 
  * Encapsule un message envoye par un client sur une conversation.
@@ -18,6 +19,7 @@ public final class Message
 	private final String pseudo;
 	
 	/**
+	 * ****************************
 	 * Constructeur parametrique
 	 * 
 	 * @param pseudo
@@ -30,6 +32,7 @@ public final class Message
 	}
 
 	/**
+	 * ********************************
 	 * Retourne le message sous forme :
 	 * "Nom de l'envoyeur : message"
 	 */

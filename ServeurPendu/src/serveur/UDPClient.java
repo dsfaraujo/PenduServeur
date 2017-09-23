@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 /**
+ * ********************************************************
  * Classe utilitaire permettant de faire appel a un serveur UDP
  *
  * @author rebecca
@@ -16,6 +17,7 @@ public final class UDPClient{
 	public static final int PORT = 6112;
 	
 	/**
+	 * ************************************************
 	 * Envoie une chaine de caractere au serveur UDP et 
      * retourne la reponse
      *

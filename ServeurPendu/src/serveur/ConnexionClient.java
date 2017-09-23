@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 /**
+ * ********************************************************
  * Encapsule une connexion avec un client.
  * Un client roule dans un thread dedie.
  * 
@@ -28,7 +29,6 @@ public class ConnexionClient implements Observer, Runnable{
 
 	/**
 	 * ********************************************************
-	
 	 * Constructeur parametrique 
 	 * 
 	 * @param socket la connexion vers le client
@@ -42,13 +42,14 @@ public class ConnexionClient implements Observer, Runnable{
 	}
 
 	/**
+	 * ********************************************************
 	 * Mise a jour de la conversation
 	 */
 	public void update(Observable arg0, Object arg1) {
 		PrintWriter out;
 		try {
 			out = new PrintWriter(socket.getOutputStream());
-			out.println("********** " + conversation.getLastMessage());
+			out.println("---> " + conversation.getLastMessage());
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -68,7 +69,7 @@ public class ConnexionClient implements Observer, Runnable{
 		PrintWriter out;
 		try {
 			out = new PrintWriter(socket.getOutputStream());
-			out.println("Connectes : " + conversation.getClients());	        
+			//out.println("Connectes : " + conversation.getClients());	        
 			out.println("Entrez votre nom.");
 			out.flush();
 
@@ -81,7 +82,7 @@ public class ConnexionClient implements Observer, Runnable{
 			String nom = in.readLine();
 			
 			//********************************************************
-			while (nom.equals("?") || nom.equals("QUIT") || !conversation.ajouterClient(nom))
+			while (nom.equals("?") || nom.equals("QUIT"))
 			{
 				out.println("S'il vous plait choisissez un nom unique et différent de ? et QUIT.");
 				out.flush();
@@ -100,9 +101,10 @@ public class ConnexionClient implements Observer, Runnable{
 
 			//*******************************************************
 			if (msg.equals("o") || msg.equals("O")) {
+				conversation.deleteObserver(this);  
 				out.println(pendu);
 				out.flush();
-
+			
 				while(!msg.equals("QUIT"))
 				{
 					if (msg.equals("?"))
@@ -120,14 +122,13 @@ public class ConnexionClient implements Observer, Runnable{
 						taillePendu = motPendu.length();
 						out.println("Entrez une lettre");
 						out.flush();
+						
 						//rentre dans le jeu
 						while(maxFauxFois != 0) {
 			
 							String motAffiche = "";
-
 							msg = in.readLine();
 							msg = msg.toUpperCase();
-							
 							//transforme le mot affiché en spaces vides = "_"
 							for (int i = 0; i < taillePendu; i++) {
 								if (motPendu.charAt(i) == msg.charAt(0)) {
@@ -140,7 +141,6 @@ public class ConnexionClient implements Observer, Runnable{
 									motAffiche += "_";
 								}
 							}
-							
 							//si le joueur rentre une mot valide
 							if (pendu.equals(motAffiche)) {
 								maxFauxFois--;
@@ -163,14 +163,11 @@ public class ConnexionClient implements Observer, Runnable{
 								msg = "QUIT";
 							}
 							else if (maxFauxFois == 0) {
-								out.println(nom +" a perdu! Le mot a été:" + motPendu);
+								out.println(nom +" a perdu! Le mot a été: " + motPendu);
 								out.flush();
 								msg = "QUIT";
 							}
-
-							//conversation.parler(new Message(nom + " entrée", msg));
 						}
-
 						msg = in.readLine();
 					}
 				}
@@ -180,20 +177,18 @@ public class ConnexionClient implements Observer, Runnable{
 			else {
 				out.println("En attend d'un autre joueur");
 				out.flush();
-				//pour quitter
+	
 				while(!msg.equals("QUIT"))
 				{
 					if (msg.equals("?"))
 					{
-						out.println("En ligne : " + conversation.getClients());
-						out.flush();
 						java.util.Date date = new java.util.Date();
 						System.out.println(msg + " : " + date.toString());
-
 					}
 					//si le cliet ne veut pas quitter, il rentre dans le chat
 					else
 					{
+						conversation.ajouterClient(nom);
 						j1 = conversation.getClients().get(0);
 						j2 = conversation.getClients().get(1);
 						System.out.println("j1 = "+j1);
@@ -226,8 +221,8 @@ public class ConnexionClient implements Observer, Runnable{
 								while(maxFauxFois != 0) {
 
 									String motAffiche = "";
-									msg = in.readLine();
-									msg = msg.toUpperCase();
+									//msg = in.readLine();
+									//msg = msg.toUpperCase();
 
 									//transforme le mot affiché en spaces vides = "_"
 									for (int i = 0; i < taillePendu; i++) {
@@ -241,15 +236,18 @@ public class ConnexionClient implements Observer, Runnable{
 											motAffiche += "_";
 										}
 									}
+									
 									//si le joueur rentre une mot valide
 									if (pendu.equals(motAffiche)) {
 										maxFauxFois--;
 										conversation.parler(new Message("Mot invalide. Il reste "+ maxFauxFois, " tentatives. Rentrez un nouveau mot"));
 										conversation.parler(new Message(pendu, ""));
+										
 									} else {
 										pendu = motAffiche;
 										out.println("Mot valide");
 										conversation.parler(new Message(pendu, ""));
+										
 									}
 									//s'il ne reste plus de fois à joueur
 									if (pendu.equals(motPendu)) {
@@ -257,23 +255,18 @@ public class ConnexionClient implements Observer, Runnable{
 										msg = "QUIT";
 									}
 									else if (maxFauxFois == 0) {
-										conversation.parler(new Message(nom +" a perdu! Le mot a été:", motPendu));
+										conversation.parler(new Message(nom +" a perdu! Le mot a été", motPendu));
 										msg = "QUIT";
 									}
-
+									msg = in.readLine();
+									msg = msg.toUpperCase();
 									//conversation.parler(new Message(nom + " entrée", msg));
-
 								}
-
-								//msg = in.readLine();
 							}
-
 						}
 					}
-
 				}
 			}
-			//*******************************************************
 			conversation.deleteObserver(this);  
 			conversation.retirerClient(nom);
 			socket.close();

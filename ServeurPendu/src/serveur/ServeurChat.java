@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * ********************************************************
  * Encapsule un serveur qui permet a un maximum de NB_CLIENTS clients a la fois
  * de participer a une conversation sous forme de protocole TCP sur port PORT
  * 
@@ -24,6 +25,7 @@ public class ServeurChat implements Observer{
 	final int PORT = 8888;
 
 	/**
+	 * ********************
 	 * Execution du serveur
 	 */
 	public void run()
@@ -64,6 +66,7 @@ public class ServeurChat implements Observer{
 	}
 
 	/**
+	 * *****************************************
 	 * Utilitaire pour fermer le pool de thread.
 	 * Calqué de la documentation Oracle pour la classe ExecutorService
 	 * @param pool
@@ -87,6 +90,7 @@ public class ServeurChat implements Observer{
 	}
 
 	/**
+	 * ****************************************************
 	 * Lorsqu'un client envoie un message a la conversation
 	 * Le serveur est alerte. Ceci sert uniquemet a afficher
 	 * la conversation a la console.
