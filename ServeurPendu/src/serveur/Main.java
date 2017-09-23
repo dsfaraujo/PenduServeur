@@ -12,7 +12,7 @@ public class Main
 		motPendu = UDPClient.envoyerMessage("DD");
 		
 		System.out.println("mot pendu = "+ motPendu);
-		ServeurChat sc = new ServeurChat();
+		ServeurPendu sc = new ServeurPendu();
 		sc.run();
 	}
 }

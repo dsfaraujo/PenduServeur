@@ -24,7 +24,7 @@ import java.util.Scanner;
  */
 public class ConnexionClient implements Observer, Runnable{
 	private Socket socket;
-	private Conversation conversation;
+	private JeuPendu jeu;
 	static String j1, j2;
 
 	/**
@@ -34,10 +34,10 @@ public class ConnexionClient implements Observer, Runnable{
 	 * @param socket la connexion vers le client
 	 * @param conversation la conversation
 	 */
-	public ConnexionClient(Socket socket, Conversation conversation)
+	public ConnexionClient(Socket socket, JeuPendu conversation)
 	{
 		this.socket = socket;
-		this.conversation = conversation;
+		this.jeu = conversation;
 		conversation.addObserver(this);
 	}
 
@@ -49,7 +49,7 @@ public class ConnexionClient implements Observer, Runnable{
 		PrintWriter out;
 		try {
 			out = new PrintWriter(socket.getOutputStream());
-			out.println("---> " + conversation.getLastMessage());
+			out.println("---> " + jeu.getLastMessage());
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -101,7 +101,7 @@ public class ConnexionClient implements Observer, Runnable{
 
 			//*******************************************************
 			if (msg.equals("o") || msg.equals("O")) {
-				conversation.deleteObserver(this);  
+				jeu.deleteObserver(this);  
 				out.println(pendu);
 				out.flush();
 			
@@ -109,7 +109,7 @@ public class ConnexionClient implements Observer, Runnable{
 				{
 					if (msg.equals("?"))
 					{
-						out.println("En ligne : " + conversation.getClients());
+						out.println("En ligne : " + jeu.getClients());
 						out.flush();
 						java.util.Date date = new java.util.Date();
 						System.out.println(msg + " : " + date.toString());
@@ -188,17 +188,17 @@ public class ConnexionClient implements Observer, Runnable{
 					//si le cliet ne veut pas quitter, il rentre dans le chat
 					else
 					{
-						conversation.ajouterClient(nom);
-						j1 = conversation.getClients().get(0);
-						j2 = conversation.getClients().get(1);
+						jeu.ajouterClient(nom);
+						j1 = jeu.getClients().get(0);
+						j2 = jeu.getClients().get(1);
 						System.out.println("j1 = "+j1);
 						System.out.println("j2 = "+j2);
-						List<String> joueurs = conversation.getClients();
+						List<String> joueurs = jeu.getClients();
 						
 						//s'il y a deux joueurs, le jeu commence
 						if (joueurs.size() == 2) {
 							String bourreau = joueurs.get(new Random().nextInt(joueurs.size()));
-							conversation.parler(new Message(bourreau + " est le bourreau", " Entrez une mot pour l'autre joueur déviner"));
+							jeu.parler(new Message(bourreau + " est le bourreau", " Entrez une mot pour l'autre joueur déviner"));
 							
 							//dès que le bourreau est choisi, il doit choisir un mot pour l'aure joueur déviner
 							while (bourreau.length() >= 1) {
@@ -211,7 +211,7 @@ public class ConnexionClient implements Observer, Runnable{
 								motPendu = msg; 
 								pendu = new String(new char[motPendu.length()]).replace("\0", "_");
 								taillePendu = motPendu.length();
-								conversation.parler(new Message(pendu, "Entrez une lettre"));
+								jeu.parler(new Message(pendu, "Entrez une lettre"));
 								out.flush();
 								msg = in.readLine();
 								msg = msg.toUpperCase();
@@ -240,22 +240,22 @@ public class ConnexionClient implements Observer, Runnable{
 									//si le joueur rentre une mot valide
 									if (pendu.equals(motAffiche)) {
 										maxFauxFois--;
-										conversation.parler(new Message("Mot invalide. Il reste "+ maxFauxFois, " tentatives. Rentrez un nouveau mot"));
-										conversation.parler(new Message(pendu, ""));
+										jeu.parler(new Message("Mot invalide. Il reste "+ maxFauxFois, " tentatives. Rentrez un nouveau mot"));
+										jeu.parler(new Message(pendu, ""));
 										
 									} else {
 										pendu = motAffiche;
 										out.println("Mot valide");
-										conversation.parler(new Message(pendu, ""));
+										jeu.parler(new Message(pendu, ""));
 										
 									}
 									//s'il ne reste plus de fois à joueur
 									if (pendu.equals(motPendu)) {
-										conversation.parler(new Message( nom +" a gagné!! Le mot est",  pendu));
+										jeu.parler(new Message( nom +" a gagné!! Le mot est",  pendu));
 										msg = "QUIT";
 									}
 									else if (maxFauxFois == 0) {
-										conversation.parler(new Message(nom +" a perdu! Le mot a été", motPendu));
+										jeu.parler(new Message(nom +" a perdu! Le mot a été", motPendu));
 										msg = "QUIT";
 									}
 									msg = in.readLine();
@@ -267,8 +267,8 @@ public class ConnexionClient implements Observer, Runnable{
 					}
 				}
 			}
-			conversation.deleteObserver(this);  
-			conversation.retirerClient(nom);
+			jeu.deleteObserver(this);  
+			jeu.retirerClient(nom);
 			socket.close();
 		}
 		//*******************************************************
