@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ServeurPendu implements Observer{
 
-	JeuPendu conversation = new JeuPendu();
+	JeuPendu jeu = new JeuPendu();
 
 	final int NB_CLIENTS = 30;
 	final int PORT = 8888;
@@ -40,7 +40,7 @@ public class ServeurPendu implements Observer{
 
 			service = Executors.newFixedThreadPool(NB_CLIENTS);
 
-			conversation.addObserver(this);
+			jeu.addObserver(this);
 
 			while(true)
 			{
@@ -48,7 +48,7 @@ public class ServeurPendu implements Observer{
 				Socket socketVersLeClient = socketDuServeur.accept();
 				System.out.println("Un client s'est connecté");
 
-				service.submit(new ConnexionClient(socketVersLeClient, conversation));
+				service.submit(new ConnexionClient(socketVersLeClient, jeu));
 			}
 		} 
 		catch (IOException e) {
@@ -97,6 +97,6 @@ public class ServeurPendu implements Observer{
 	 */
 	public void update(Observable arg0, Object arg1) 
 	{		
-		System.out.println(conversation.getLastMessage());
+		System.out.println(jeu.getLastMessage());
 	}
 }

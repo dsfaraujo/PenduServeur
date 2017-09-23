@@ -20,7 +20,7 @@ import java.util.Scanner;
  * Lorsqu'un message est envoye par un autre client, cet
  * objet est alertee.
  * 
- * @author rebecca
+ * @author diana
  */
 public class ConnexionClient implements Observer, Runnable{
 	private Socket socket;
@@ -196,7 +196,15 @@ public class ConnexionClient implements Observer, Runnable{
 						List<String> joueurs = jeu.getClients();
 						
 						//s'il y a deux joueurs, le jeu commence
+						if (joueurs.size() ==1) {
+							while(joueurs.size() ==1) {
+								Thread.sleep(1);
+							}
+							
+						}
 						if (joueurs.size() == 2) {
+							
+						
 							String bourreau = joueurs.get(new Random().nextInt(joueurs.size()));
 							jeu.parler(new Message(bourreau + " est le bourreau", " Entrez une mot pour l'autre joueur déviner"));
 							
@@ -274,6 +282,9 @@ public class ConnexionClient implements Observer, Runnable{
 		//*******************************************************
 		catch (IOException e) 
 		{
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
