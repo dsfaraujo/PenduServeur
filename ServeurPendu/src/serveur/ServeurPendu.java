@@ -46,9 +46,12 @@ public class ServeurPendu implements Observer{
 			{
 				// Connexion d'un client
 				Socket socketVersLeClient = socketDuServeur.accept();
+				Socket socketVersLeClient2 = socketDuServeur.accept();
 				System.out.println("Un client s'est connecté");
-
-				service.submit(new ConnexionClient(socketVersLeClient, jeu));
+				service.submit(new ConnexionClient(socketVersLeClient, socketVersLeClient2, jeu));
+				service.submit(new ConnexionClient(socketVersLeClient2, socketVersLeClient, jeu));
+		
+				
 			}
 		} 
 		catch (IOException e) {

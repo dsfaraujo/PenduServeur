@@ -23,7 +23,7 @@ import java.util.Scanner;
  * @author diana
  */
 public class ConnexionClient implements Observer, Runnable{
-	private Socket socket;
+	private Socket socket, socket2;
 	private JeuPendu jeu;
 	static String j1, j2;
 
@@ -34,9 +34,9 @@ public class ConnexionClient implements Observer, Runnable{
 	 * @param socket la connexion vers le client
 	 * @param conversation la conversation
 	 */
-	public ConnexionClient(Socket socket, JeuPendu conversation)
-	{
+	public ConnexionClient(Socket socket, Socket socket2,JeuPendu conversation){
 		this.socket = socket;
+		this.socket2 = socket2;
 		this.jeu = conversation;
 		conversation.addObserver(this);
 	}
@@ -46,7 +46,7 @@ public class ConnexionClient implements Observer, Runnable{
 	 * Mise a jour de la conversation
 	 */
 	public void update(Observable arg0, Object arg1) {
-		PrintWriter out;
+		PrintWriter out, out2;
 		try {
 			out = new PrintWriter(socket.getOutputStream());
 			out.println("---> " + jeu.getLastMessage());
@@ -66,31 +66,33 @@ public class ConnexionClient implements Observer, Runnable{
 	 * Pour voir la liste des clients connectés, il doit entrer "?"
 	 */
 	public void run() {
-		PrintWriter out;
+		PrintWriter out, out2;
 		try {
 			out = new PrintWriter(socket.getOutputStream());
 			//out.println("Connectes : " + conversation.getClients());	        
 			out.println("Entrez votre nom.");
 			out.flush();
-
 			String motPendu = Main.motPendu;
 			int maxFauxFois = 10;
 			int taillePendu;
 			String pendu = new String(new char[motPendu.length()]).replace("\0", "_");
-
 			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			BufferedReader in2 = new BufferedReader(new InputStreamReader(socket2.getInputStream()));
 			String nom = in.readLine();
-			
 			//********************************************************
-			while (nom.equals("?") || nom.equals("QUIT"))
-			{
+			while (nom.equals("?") || nom.equals("QUIT")){
 				out.println("S'il vous plait choisissez un nom unique et différent de ? et QUIT.");
 				out.flush();
 				nom = in.readLine();
 			} 
+			if(jeu.getClients().size() == 2) {
+				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				nom = in.readLine();
+				in2 = new BufferedReader(new InputStreamReader(socket2.getInputStream()));
+				nom = in2.readLine();
+			}
 	
-			//********************************************************
-	
+			//*******************************************************
 			out.println("Entrer QUIT pour quitter");
 			out.flush();
 			out.println("Bienvenue au jeu du Pendu");
@@ -105,27 +107,22 @@ public class ConnexionClient implements Observer, Runnable{
 				out.println(pendu);
 				out.flush();
 			
-				while(!msg.equals("QUIT"))
-				{
-					if (msg.equals("?"))
-					{
+				while(!msg.equals("QUIT")){
+					if (msg.equals("?")){
 						out.println("En ligne : " + jeu.getClients());
 						out.flush();
 						java.util.Date date = new java.util.Date();
 						System.out.println(msg + " : " + date.toString());
-
 					}
 					//*******************************************************
 					//si le client veut joueur contre l'ordinateur
-					else
-					{
+					else{
 						taillePendu = motPendu.length();
 						out.println("Entrez une lettre");
 						out.flush();
 						
 						//rentre dans le jeu
 						while(maxFauxFois != 0) {
-			
 							String motAffiche = "";
 							msg = in.readLine();
 							msg = msg.toUpperCase();
@@ -178,16 +175,13 @@ public class ConnexionClient implements Observer, Runnable{
 				out.println("En attend d'un autre joueur");
 				out.flush();
 	
-				while(!msg.equals("QUIT"))
-				{
-					if (msg.equals("?"))
-					{
+				while(!msg.equals("QUIT")){
+					if (msg.equals("?")){
 						java.util.Date date = new java.util.Date();
 						System.out.println(msg + " : " + date.toString());
 					}
 					//si le cliet ne veut pas quitter, il rentre dans le chat
-					else
-					{
+					else{
 						jeu.ajouterClient(nom);
 						j1 = jeu.getClients().get(0);
 						j2 = jeu.getClients().get(1);
@@ -200,18 +194,17 @@ public class ConnexionClient implements Observer, Runnable{
 							while(joueurs.size() ==1) {
 								Thread.sleep(1);
 							}
-							
 						}
 						if (joueurs.size() == 2) {
-							
-						
-							String bourreau = joueurs.get(new Random().nextInt(joueurs.size()));
+							String bourreau = joueurs.get(0);
 							jeu.parler(new Message(bourreau + " est le bourreau", " Entrez une mot pour l'autre joueur déviner"));
-							
+							msg = in.readLine();
 							//dès que le bourreau est choisi, il doit choisir un mot pour l'aure joueur déviner
 							while (bourreau.length() >= 1) {
-
+								//jeu.parler(new Message(pendu + " est le bourreau", " Entrez une mot pour l'autre joueur déviner"));
 								msg = in.readLine();
+								System.out.println(msg);
+								msg = in2.readLine();
 								System.out.println(msg);
 								msg = msg.toUpperCase();
 								//valide le mot entree avec le serveur
@@ -220,18 +213,15 @@ public class ConnexionClient implements Observer, Runnable{
 								pendu = new String(new char[motPendu.length()]).replace("\0", "_");
 								taillePendu = motPendu.length();
 								jeu.parler(new Message(pendu, "Entrez une lettre"));
-								out.flush();
 								msg = in.readLine();
+								System.out.println(msg);
+								msg = in2.readLine();
+								System.out.println(msg);
 								msg = msg.toUpperCase();
-								
 								//*******************************************************
 								//valide les entrées
 								while(maxFauxFois != 0) {
-
 									String motAffiche = "";
-									//msg = in.readLine();
-									//msg = msg.toUpperCase();
-
 									//transforme le mot affiché en spaces vides = "_"
 									for (int i = 0; i < taillePendu; i++) {
 										if (motPendu.charAt(i) == msg.charAt(0)) {
@@ -244,7 +234,6 @@ public class ConnexionClient implements Observer, Runnable{
 											motAffiche += "_";
 										}
 									}
-									
 									//si le joueur rentre une mot valide
 									if (pendu.equals(motAffiche)) {
 										maxFauxFois--;
@@ -267,6 +256,7 @@ public class ConnexionClient implements Observer, Runnable{
 										msg = "QUIT";
 									}
 									msg = in.readLine();
+									msg = in2.readLine();
 									msg = msg.toUpperCase();
 									//conversation.parler(new Message(nom + " entrée", msg));
 								}
