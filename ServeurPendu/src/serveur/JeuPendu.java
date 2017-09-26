@@ -7,14 +7,14 @@ import java.util.Observable;
 
 /**
  * ********************************************************
- * Classe Conversation
+ * Classe JeuPendu
  * 
  * Encapsule la liste des messages envoyes par des clients.
  * Elle est observee par tous les clients:
  * A chaque fois qu'un client envoie un message, tous sont
  * avertis.
  * 
- * @author rebecca
+ * @author Diana Soares, Patricia Shimizu
  *
  */
 public class JeuPendu extends Observable
@@ -22,14 +22,14 @@ public class JeuPendu extends Observable
 
 	List<Message> messages = new ArrayList<Message>();
 	List<String> clients = new ArrayList<String>();
-	
+	List<String> mots = new ArrayList<String>();
 	/**
 	 * **************************************************
 	 * Ajoute a la liste de messages le message et alerte
 	 * les observateurs.
 	 * 
 	 * Sur pour les appels multithread. Un seul message peut etre
-	 * ajoute a la fois et tous les observateurs sont notifies avant qu'un
+	 * ajoute a la fois et tous les observateurs sont notifies avant qu'un
 	 * nouveau message puisse etre recu.
 	 * 
 	 * @param message
@@ -40,7 +40,6 @@ public class JeuPendu extends Observable
 		setChanged();
 		notifyObservers();
 	}
-	
 	/**
 	 * *********************************
 	 * Accesseur sur le dernier message
@@ -51,7 +50,10 @@ public class JeuPendu extends Observable
 	{
 		return messages.get(messages.size() - 1);
 	}
-	
+	List<String> getMots()
+	{
+		return mots;
+	}
 	/**
 	 * ********************************************************
 	 * Accesseur pour la liste des noms des clients en ligne
@@ -61,7 +63,6 @@ public class JeuPendu extends Observable
 	{
 		return clients;
 	}
-	
 	/**
 	 * ********************************************************
 	 * Ajoute un nom de client à la liste si celle-ci ne le contient pas déjà
@@ -74,13 +75,11 @@ public class JeuPendu extends Observable
 			return false;
 		}
 		else {
-			
 		}
 		clients.add(client);
-        parler(new Message(client, "vient de se connecter"));
+		parler(new Message(client, "vient de se connecter"));
 		return true;
 	}
-	
 	/**
 	 * ********************************************************
 	 * Retire un nom de la liste des clients. Cette méthode est appelée lorsqu'un
@@ -89,7 +88,11 @@ public class JeuPendu extends Observable
 	 */
 	synchronized void retirerClient(String client)
 	{
-        parler(new Message(client, "vient de se déconnecter"));
+		parler(new Message(client, "vient de se déconnecter"));
 		clients.remove(client);
 	}
+	public void ajouterMot(String mot) {
+		mots.add(mot);
+	}
 }
+

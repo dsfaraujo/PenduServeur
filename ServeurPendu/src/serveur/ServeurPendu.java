@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  * Encapsule un serveur qui permet a un maximum de NB_CLIENTS clients a la fois
  * de participer a une conversation sous forme de protocole TCP sur port PORT
  * 
- * @author rebecca
+ * @author Diana Soares, Patricia Shimizu
  *
  */
 public class ServeurPendu implements Observer{
@@ -23,6 +23,10 @@ public class ServeurPendu implements Observer{
 
 	final int NB_CLIENTS = 30;
 	final int PORT = 8888;
+	static Socket socketVersLeClient;
+
+	static Socket socketVersLeClient2;
+
 
 	/**
 	 * ********************
@@ -45,12 +49,19 @@ public class ServeurPendu implements Observer{
 			while(true)
 			{
 				// Connexion d'un client
-				Socket socketVersLeClient = socketDuServeur.accept();
-				Socket socketVersLeClient2 = socketDuServeur.accept();
-				System.out.println("Un client s'est connecté");
-				service.submit(new ConnexionClient(socketVersLeClient, socketVersLeClient2, jeu));
-				service.submit(new ConnexionClient(socketVersLeClient2, socketVersLeClient, jeu));
-		
+				socketVersLeClient = socketDuServeur.accept();
+				socketVersLeClient2 = null;
+				
+					System.out.println("Un client s'est connecté");
+					service.submit(new ConnexionClient(socketVersLeClient, jeu));
+					//s'il y a déjà 1 client connecté, il crée un nouveau socket pour le 2eme
+				while(socketVersLeClient.isConnected()) {
+					socketVersLeClient2 = socketDuServeur.accept();
+					System.out.println("Un 2eme client s'est connecté");
+					//service.submit(new ConnexionClient(socketVersLeClient, socketVersLeClient2, jeu));
+					service.submit(new ConnexionClient(socketVersLeClient2, socketVersLeClient, jeu));
+
+				}
 				
 			}
 		} 
@@ -67,7 +78,7 @@ public class ServeurPendu implements Observer{
 			}
 		}
 	}
-
+	
 	/**
 	 * *****************************************
 	 * Utilitaire pour fermer le pool de thread.

@@ -1,7 +1,10 @@
 package serveur;
-/*
- * *********************
- * Activité principal
+/**
+ * ********************************************************
+ * Activité Principal
+ * 
+ * @author Diana Soares, Patricia Shimizu
+ *
  */
 public class Main 
 {
@@ -9,9 +12,9 @@ public class Main
 	public static void main(String args[])
 	{   	
 		// Demarrer un serveur de Chat
-		motPendu = UDPClient.envoyerMessage("DD");
+		//motPendu = UDPClient.envoyerMessage("DD");
 		
-		System.out.println("mot pendu = "+ motPendu);
+		//System.out.println("mot pendu = "+ motPendu);
 		ServeurPendu sc = new ServeurPendu();
 		sc.run();
 	}
